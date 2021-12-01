@@ -13,8 +13,8 @@ from itertools import zip_longest
 
 
 # load MNIST dataset
-mndata = MNIST('python-mnist/data')
-# mndata = MNIST('/data/s2732815/python-mnist/data')
+# mndata = MNIST('python-mnist/data')
+mndata = MNIST('/data/s2732815/python-mnist/data')
 
 X_train, y_train = mndata.load_training()
 X_test, y_test = mndata.load_testing()
