@@ -97,7 +97,7 @@ if __name__ == "__main__":
         best_params = fmin(fn=obj_func,
                         space=space,
                         algo=rand.suggest,
-                        max_evals=2,
+                        max_evals=100,
                         trials=trials)
 
         print("Best parameters:", best_params)
