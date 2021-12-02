@@ -39,7 +39,7 @@ print("Target test Data Shape", len(y_test))
 # define space for TPE HPO
 space = {"lrate": hp.uniform("lrate", 0, 1),
          "l2_reg": hp.uniform("l2_reg", 0, 1),
-         "batchsize": scope.int(hp.quniform("batchsize", 20, 2000, 1)),
+         # "batchsize": scope.int(hp.quniform("batchsize", 20, 2000, 1)),
          "n_epochs": scope.int(hp.quniform("n_epochs", 5, 2000, 1))}
 
 
@@ -113,7 +113,8 @@ if __name__ == "__main__":
         #                         "Best params": best_params}))
 
         filename = 'csv_data/random{}.csv'.format(i)
-        header = ['lrate', 'l2_reg', 'batchsize', 'n_epochs', 'loss']
+        # header = ['lrate', 'l2_reg', 'batchsize', 'n_epochs', 'loss']
+        header = ['lrate', 'l2_reg', 'n_epochs', 'loss']
         values = (val.get(key, []) for key in header)
         data = (dict(zip(header, row)) for row in zip(*values))
         with open(filename, 'w') as f:
