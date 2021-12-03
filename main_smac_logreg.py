@@ -18,8 +18,8 @@ from itertools import zip_longest
 
 
 # load MNIST dataset
-mndata = MNIST('python-mnist/data')
-# mndata = MNIST('/data/s2732815/python-mnist/data')
+# mndata = MNIST('python-mnist/data')
+mndata = MNIST('/data/s2732815/python-mnist/data')
 
 X_train, y_train = mndata.load_training()
 X_test, y_test = mndata.load_testing()
@@ -70,12 +70,13 @@ if __name__ == "__main__":
     scenario = Scenario({
         'run_obj': 'quality',
         'cs': param_space,
-        'runcounot-limit': 2,
-        # 'deterministic': 'false',
+        'runcount-limit': 10,
+        'deterministic': True,
+        "wallclock-limit": 100,
     })
 
 
-    num_repeat = 10
+    num_repeat = 2
     for i in range(num_repeat):
         print(f'Run {i}/{num_repeat}')
         # perform SMAC optimization and do logging
