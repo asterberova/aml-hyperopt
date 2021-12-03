@@ -70,13 +70,13 @@ if __name__ == "__main__":
     scenario = Scenario({
         'run_obj': 'quality',
         'cs': param_space,
-        'runcount-limit': 10,
+        'runcount-limit': 100,
         'deterministic': True,
-        "wallclock-limit": 100,
+        # "wallclock-limit": 100,
     })
 
 
-    num_repeat = 2
+    num_repeat = 10
     for i in range(num_repeat):
         print(f'Run {i}/{num_repeat}')
         # perform SMAC optimization and do logging
@@ -89,7 +89,21 @@ if __name__ == "__main__":
         best_params = smac.optimize()
 
         rh = smac.runhistory
-        print(rh)
+        # print(rh)
+        val = {
+            'lrate': [],
+            'l2_reg': [],
+            'n_epochs': [],
+            'loss': []
+        }
+        confs = rh.get_all_configs()
+        for c in confs:
+            loss = rh.get_cost(c)
+            for key in val.keys():
+                if key == 'loss':
+                    val[key].append(loss)
+                else:
+                    val[key].append(c._values[key])
 
         # print("Best parameters:",best_params)
         # print(trials.best_trial['result']['loss'])
@@ -103,15 +117,15 @@ if __name__ == "__main__":
         #     f.write(json.dumps({"Loss": trials.best_trial['result']['loss'],
         #                         "Best params": best_params}))
 
-        # filename = 'csv_data/hpo{}.csv'.format(i)
-        # # header = ['lrate', 'l2_reg', 'batchsize', 'n_epochs', 'loss']
-        # header = ['lrate', 'l2_reg', 'n_epochs', 'loss']
-        # values = (val.get(key, []) for key in header)
-        # data = (dict(zip(header, row)) for row in zip(*values))
-        # with open(filename, 'w') as f:
-        #     wrtr = csv.DictWriter(f, fieldnames=header)
-        #     wrtr.writeheader()
-        #     wrtr.writerows(data)
+        filename = 'csv_data/smac{}.csv'.format(i)
+        # header = ['lrate', 'l2_reg', 'batchsize', 'n_epochs', 'loss']
+        header = ['lrate', 'l2_reg', 'n_epochs', 'loss']
+        values = (val.get(key, []) for key in header)
+        data = (dict(zip(header, row)) for row in zip(*values))
+        with open(filename, 'w') as f:
+            wrtr = csv.DictWriter(f, fieldnames=header)
+            wrtr.writeheader()
+            wrtr.writerows(data)
 
 
 
