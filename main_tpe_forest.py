@@ -1,22 +1,42 @@
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.utils import shuffle
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+
 
 from hyperopt.pyll import scope
 from hyperopt import hp, tpe, fmin, Trials, STATUS_OK
 import json
+import glob
 import numpy as np
+import pandas as pd
 import pickle
 import csv
 from itertools import zip_longest
 
 
-# load all gathered csv data TODO:
-X_train, y_train = [], []
+# load all gathered csv data
+path = 'csv_data'
+filepath = glob.glob(path+'/*.csv')
+# half data ofr training and second half for testing
+# preprocessing - depends on how the data from each of us look like
+data = pd.DataFrame()
+for filename in filepath:
+    print('Reading {}'.format(filename))
+    df = pd.read_csv(filename)
+    data = pd.concat((df, data), axis=0)
+    # pre_data.append(df)
+# data = pd.concat(pre_data, axis=0, ignore_index=True)
+print(data)
 
+X = data.drop(columns=['loss'])
+y = data['loss']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0, random_state=33, shuffle=True)
 
-print("Train Data Shape", len(X_train), len(X_train[0]))
-print("Target Data Shape", len(y_train))
+print("Image Data Shape", X_train.shape)
+print("Image test Data Shape", X_test.shape)
+print("Target Data Shape", y_train.shape)
+print("Target test Data Shape", y_test.shape)
 
 
 # define best founded parameters for random forest TODO:
@@ -87,7 +107,7 @@ if __name__ == "__main__":
         #     f.write(json.dumps({"Loss": trials.best_trial['result']['loss'],
         #                         "Best params": best_params}))
 
-        filename = 'csv_data/SB_tpe{}.csv'.format(i)
+        filename = 'results/tpe{}.csv'.format(i)
         # header = ['lrate', 'l2_reg', 'batchsize', 'n_epochs', 'loss']
         header = ['lrate', 'l2_reg', 'n_epochs', 'loss']
         values = (val.get(key, []) for key in header)

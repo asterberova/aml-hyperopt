@@ -12,7 +12,6 @@ import csv
 from itertools import zip_longest
 
 
-
 # load MNIST dataset
 # mndata = MNIST('python-mnist/data')
 mndata = MNIST('/data/s2732815/python-mnist/data')
@@ -88,16 +87,25 @@ def obj_func(params):
 
 
 if __name__ == "__main__":
-    num_repeat = 10
+    get_train_data = False  # True - gather train data, False - gather test data
+    if get_train_data:
+        num_repeat = 10
+    else:   # get TEST data
+        num_repeat = 1
 
     for i in range(num_repeat):
         print(f'Run {i}/{num_repeat}')
+        if get_train_data: # get 100 samples from each run as TRAIN data
+            max_evals = 100
+        else:  # get 1000 samples as TEST data
+            max_evals = 1
+
         # perform TPE optimization and do logging
         trials = Trials()
         best_params = fmin(fn=obj_func,
                         space=space,
                         algo=rand.suggest,
-                        max_evals=100,
+                        max_evals=max_evals,
                         trials=trials)
 
         print("Best parameters:", best_params)
@@ -112,7 +120,7 @@ if __name__ == "__main__":
         #     f.write(json.dumps({"Loss": trials.best_trial['result']['loss'],
         #                         "Best params": best_params}))
 
-        filename = 'csv_data/random{}.csv'.format(i)
+        filename = 'test_data/random.csv'.format(i)
         # header = ['lrate', 'l2_reg', 'batchsize', 'n_epochs', 'loss']
         header = ['lrate', 'l2_reg', 'n_epochs', 'loss']
         values = (val.get(key, []) for key in header)

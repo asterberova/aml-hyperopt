@@ -111,7 +111,7 @@ if __name__ == "__main__":
         #     f.write(json.dumps({"Loss": trials.best_trial['result']['loss'],
         #                         "Best params": best_params}))
 
-        filename = 'csv_data/hpo{}.csv'.format(i)
+        filename = 'csv_data/tpe{}.csv'.format(i)
         # header = ['lrate', 'l2_reg', 'batchsize', 'n_epochs', 'loss']
         header = ['lrate', 'l2_reg', 'n_epochs', 'loss']
         values = (val.get(key, []) for key in header)

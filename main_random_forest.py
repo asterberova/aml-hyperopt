@@ -1,36 +1,63 @@
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.utils import shuffle
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
 
 from hyperopt.pyll import scope
 from hyperopt import hp, tpe, rand, fmin, Trials, STATUS_OK
+from hyperopt.pyll import scope
+
 import json
+import glob
 import numpy as np
+import pandas as pd
 import pickle
 import csv
 
 
-# load csv data
+########     LOAD CSV DATA      ########
 # TODO: loading data from csv files
+path = 'csv_data'
+filepath = glob.glob(path+'/*.csv')
 # half data ofr training and second half for testing
 # preprocessing - depends on how the data from each of us look like
-X_train, y_train = []
-X_test, y_test = []
-y_train = []
-y_test = []
+data = pd.DataFrame()
+for filename in filepath:
+    print('Reading {}'.format(filename))
+    df = pd.read_csv(filename)
+    data = pd.concat((df, data), axis=0)
+    # pre_data.append(df)
+# data = pd.concat(pre_data, axis=0, ignore_index=True)
+print(data)
 
-print("Image Data Shape", len(X_train), len(X_train[0]))
-print("Image test Data Shape", len(X_test), len(X_test[0]))
-print("Target Data Shape", len(y_train))
-print("Target test Data Shape", len(y_test))
+X = data.drop(columns=['loss'])
+y = data['loss']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=33, shuffle=True)
 
+print("Image Data Shape", X_train.shape)
+print("Image test Data Shape", X_test.shape)
+print("Target Data Shape", y_train.shape)
+print("Target test Data Shape", y_test.shape)
 
 
 # define space for random search on Random Forest regression
-space = {'min_samples_split': hp.uniform('min_samples_split', 2, 10),
-         'n_estimators': hp.uniform('n_estimators', 10, 2000),
-         'max_features': hp.choice('max_features', ['auto', 'sqrt', 'log2'])}
+space = {
+    # 'min_samples_split': hp.uniform('min_samples_split', 2, 10),
+    'min_samples_split': scope.int(hp.quniform('min_samples_split', 2, 100, q=1)),
+    # 'n_estimators': hp.uniform('n_estimators', 10, 2000),
+    'n_estimators': scope.int(hp.quniform('n_estimators', 10, 2000, q=1)),
+    'max_features': hp.choice('max_features', ['auto', 'sqrt', 'log2'])
+}
 
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NpEncoder, self).default(obj)
 
 
 def random_forest_acc(params):
@@ -69,13 +96,13 @@ if __name__ == "__main__":
     loss = trials.losses()
     val = trials.vals
     val['loss'] = loss
-    print(val)
+    # print(val)
 
     with open('random_forest_best_params.json', 'w') as f:
         f.write(json.dumps({"Loss": trials.best_trial['result']['loss'],
-                            "Best params": best_params}))
+                            "Best params": best_params}, cls=NpEncoder))
 
-    filename = 'csv_data/random_forest.csv'
+    filename = 'random_forest_best_params.csv'
     header = ['min_samples_split', 'n_estimators', 'max_features', 'loss']
     values = (val.get(key, []) for key in header)
     data = (dict(zip(header, row)) for row in zip(*values))
