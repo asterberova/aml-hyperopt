@@ -49,10 +49,10 @@ class ExperimentGrid:
 
     @staticmethod
     def job_complete(expt_dir, id, value, duration):
-        log("setting job %d complete" % id)
+        # log("setting job %d complete" % id)
         expt_grid = ExperimentGrid(expt_dir)
         expt_grid.set_complete(id, value, duration)
-        log("set...")
+        # log("set...")
 
     @staticmethod
     def job_broken(expt_dir, id):
