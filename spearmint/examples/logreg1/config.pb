@@ -5,7 +5,7 @@ variable {
  name: "lrate"
  type: FLOAT
  size: 1
- min:  0
+ min:  1e-5
  max:  1
 }
 
