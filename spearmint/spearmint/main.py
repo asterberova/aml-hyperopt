@@ -68,7 +68,7 @@ def parse_args():
 
     parser.add_option("--max-concurrent", dest="max_concurrent",
                       help="Maximum number of concurrent jobs.",
-                      type="int", default=1)
+                      type="int", default=20)
     parser.add_option("--max-finished-jobs", dest="max_finished_jobs",
                       type="int", default=100)
     parser.add_option("--method", dest="chooser_module",
@@ -82,7 +82,7 @@ def parse_args():
                       type="string", default="")
     parser.add_option("--grid-size", dest="grid_size",
                       help="Number of experiments in initial grid.",
-                      type="int", default=100)
+                      type="int", default=40)
     parser.add_option("--grid-seed", dest="grid_seed",
                       help="The seed used to initialize initial grid.",
                       type="int", default=1)
