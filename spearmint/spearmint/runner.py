@@ -67,15 +67,15 @@ def job_runner(job):
         success = False
 
     if success:
-        log("Completed successfully in %0.2f seconds. [%f]"
-                         % (duration, job.value))
+        # log("Completed successfully in %0.2f seconds. [%f]"
+        #                  % (duration, job.value))
 
         # Update the status for this job.
         ExperimentGrid.job_complete(job.expt_dir, job.id,
                                     job.value, duration)
         job.status = 'complete'
     else:
-        log("Job failed in %0.2f seconds." % (duration))
+        # log("Job failed in %0.2f seconds." % (duration))
 
         # Update the experiment status for this job.
         ExperimentGrid.job_broken(job.expt_dir, job.id)

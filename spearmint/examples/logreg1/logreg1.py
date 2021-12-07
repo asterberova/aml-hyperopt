@@ -30,7 +30,7 @@ def logreg(params):
 
   acc = clf.score(X_test, y_test)
   loss = 1 - acc
-  print loss
+
   return loss
 
 
@@ -40,5 +40,13 @@ def main(job_id, params):
   # print 'Anything printed here will end up in the output directory for job #:', str(job_id)
   # print params
   # return branin(params['X'])
-  print params
-  return logreg(params)
+  # print params
+  loss = logreg(params)
+  print({
+      'lrate': params['lrate'][0],
+      'l2_reg': params['l2_reg'][0],
+      'n_epochs': params['n_epochs'][0],
+      'loss': loss
+  })
+
+  return loss
