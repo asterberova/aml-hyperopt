@@ -24,7 +24,7 @@ def job_runner(job):
     trying to achieve.'''
 
     redirect_output(job_output_file(job))
-    log("Running in wrapper mode for '%s'\n" % (job.id))
+    # log("Running in wrapper mode for '%s'\n" % (job.id))
 
     ExperimentGrid.job_running(job.expt_dir, job.id)
 
@@ -60,7 +60,7 @@ def job_runner(job):
     job_file = job_file_for(job)
     job      = load_job(job_file)
 
-    log("Job file reloaded.")
+    # log("Job file reloaded.")
 
     if not job.HasField("value"):
         log("Could not find value in output file.")
@@ -105,7 +105,7 @@ def run_matlab_job(job):
 def run_python_job(job):
     '''Run a Python function.'''
 
-    log("Running python job.\n")
+    # log("Running python job.\n")
 
     # Add experiment directory to the system path.
     sys.path.append(os.path.realpath(job.expt_dir))
@@ -130,7 +130,7 @@ def run_python_job(job):
     module  = __import__(job.name)
     result = module.main(job.id, params)
 
-    log("Got result %f\n" % (result))
+    # log("Got result %f\n" % (result))
 
     # Store the result.
     job.value = result

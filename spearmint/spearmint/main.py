@@ -70,7 +70,7 @@ def parse_args():
                       help="Maximum number of concurrent jobs.",
                       type="int", default=1)
     parser.add_option("--max-finished-jobs", dest="max_finished_jobs",
-                      type="int", default=10000)
+                      type="int", default=100)
     parser.add_option("--method", dest="chooser_module",
                       help="Method for choosing experiments [SequentialChooser, RandomChooser, GPEIOptChooser, GPEIOptChooser, GPEIperSecChooser, GPEIChooser]",
                       type="string", default="GPEIOptChooser")
@@ -82,7 +82,7 @@ def parse_args():
                       type="string", default="")
     parser.add_option("--grid-size", dest="grid_size",
                       help="Number of experiments in initial grid.",
-                      type="int", default=10)
+                      type="int", default=100)
     parser.add_option("--grid-seed", dest="grid_seed",
                       help="The seed used to initialize initial grid.",
                       type="int", default=1)
