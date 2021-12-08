@@ -98,7 +98,7 @@ if __name__ == "__main__":
         if get_train_data: # get 100 samples from each run as TRAIN data
             max_evals = 100
         else:  # get 1000 samples as TEST data
-            max_evals = 1
+            max_evals = 1000
 
         # perform TPE optimization and do logging
         trials = Trials()
