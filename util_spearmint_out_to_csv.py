@@ -9,7 +9,7 @@ import ast
 
 
 if __name__ == "__main__":
-    logreg = True
+    logreg = False
     if logreg: # if original benchmark was run
         path = 'spearmint_data/logreg/'
         output_path = 'csv_data/'
