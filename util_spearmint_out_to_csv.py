@@ -9,28 +9,31 @@ import ast
 
 
 if __name__ == "__main__":
+    logreg = True
+    if logreg: # if original benchmark was run
+        path = 'spearmint_data/logreg/'
+        output_path = 'csv_data/'
+    else: # if surrogate benchmark was run
+        path = 'spearmint_data/surrogate/'
+        output_path = 'results/'
 
-    path = 'spearmint_data/'
-    output_path = 'csv_data/'
-    runs = [1,6,7,8,9]
+    runs = 10
     # runs = [1]
-    for run in runs:
+    for run in range(runs):
         print('run {}'.format(run))
         eval_dict = []
         run_path = os.path.join(path, 'run{}'.format(run))
         out_path = os.path.join(run_path, 'output')
         lst = os.listdir(out_path)
         sorted_list = sorted(lst)  # important to keep the order of evaluations
-        # print(lst.sort())
         not_include = 0
         for filename in sorted_list:
             # print(filename)
             file_path = os.path.join(out_path, filename)
             with open(file_path, 'r') as f:
-                # print(f.read())
                 data = ast.literal_eval(f.read())
-                if data in eval_dict and not_include < len(sorted_list)-100:
-                    not_include += 1
+                if data in eval_dict and not_include < len(sorted_list)-100:    # preprocessing - keep only 100 samples
+                    not_include += 1                                            # not including duplicates
                 else:
                     eval_dict.append(data)
 

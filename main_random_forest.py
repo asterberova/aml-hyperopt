@@ -2,6 +2,7 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.utils import shuffle
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 
 from hyperopt.pyll import scope
 from hyperopt import hp, tpe, rand, fmin, Trials, STATUS_OK
@@ -58,14 +59,18 @@ def random_forest_acc(params):
 
     rf.fit(X_train, y_train)
 
-    acc = rf.score(X_test, y_test)
-    return acc
+    y_pred = rf.predict(X_test)
+    rmse = mean_squared_error(y_test, y_pred, squared=False)
+    # acc = rf.score(X_test, y_test)
+
+    return rmse
 
 
 def obj_func(params):
-    acc = random_forest_acc(params)
-    loss = 1 - acc
-    return {'loss': loss, 'status': STATUS_OK}
+
+    err = random_forest_acc(params)
+
+    return {'loss': err, 'status': STATUS_OK}
 
 
 if __name__ == "__main__":
