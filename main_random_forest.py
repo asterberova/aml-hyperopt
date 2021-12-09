@@ -96,6 +96,13 @@ if __name__ == "__main__":
     print("Best parameters:", best_params)
     print(trials.best_trial['result']['loss'])
 
+    if best_params['max_features'] == 0:
+        best_params['max_features'] = 'auto'
+    elif best_params['max_features'] == 1:
+        best_params['max_features'] = 'sqrt'
+    elif best_params['max_features'] == 2:
+        best_params['max_features'] = 'log2'
+
     loss = trials.losses()
     val = trials.vals
     val['loss'] = loss

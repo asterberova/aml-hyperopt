@@ -1,1 +1,1 @@
-{"Loss": 0.7298633546671879, "Best params": {"max_features": 1, "min_samples_split": 62.0, "n_estimators": 513.0}}
+{"Loss": 0.0215023712720272, "Best params": {"max_features": "auto", "min_samples_split": 91.0, "n_estimators": 140.0}}
