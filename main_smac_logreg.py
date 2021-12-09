@@ -105,17 +105,6 @@ if __name__ == "__main__":
                 else:
                     val[key].append(c._values[key])
 
-        # print("Best parameters:",best_params)
-        # print(trials.best_trial['result']['loss'])
-        #
-        # loss = trials.losses()
-        # val = trials.vals
-        # val['loss'] = loss
-        # print(val)
-
-        # with open('best.json', 'w') as f:
-        #     f.write(json.dumps({"Loss": trials.best_trial['result']['loss'],
-        #                         "Best params": best_params}))
 
         filename = 'csv_data/smac{}.csv'.format(i)
         # header = ['lrate', 'l2_reg', 'batchsize', 'n_epochs', 'loss']

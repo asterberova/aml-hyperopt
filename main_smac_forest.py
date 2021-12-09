@@ -1,6 +1,9 @@
-# Hyperopt imports
-from hyperopt.pyll import scope
-from hyperopt import hp, tpe, fmin, Trials, STATUS_OK
+# SMAC imports
+from ConfigSpace import ConfigurationSpace
+from ConfigSpace.hyperparameters import UniformIntegerHyperparameter, CategoricalHyperparameter, UniformFloatHyperparameter
+from smac.facade.smac_hpo_facade import SMAC4HPO
+from smac.scenario.scenario import Scenario
+from smac.runhistory.runhistory import RunHistory
 
 # sklearn imports
 from sklearn.utils import shuffle
@@ -33,7 +36,7 @@ print("Image Data Shape", X_train.shape)
 print("Target Data Shape", y_train.shape)
 
 
-# Read best founded parameters for random forest TODO:
+# Read best founded parameters for random forest
 f = open('random_forest_best_params.json', 'r')
 param_json = json.loads(f.read())
 best_params = param_json['Best params']
@@ -48,58 +51,69 @@ rf = RandomForestRegressor(min_samples_split=int(best_params['min_samples_split'
 rf.fit(X_train, y_train)
 
 
+
 def random_forest_loss_predict(params):
     """
     Predict loss from trained Random Forest as surrogate benchmark model
     :param params:
-    :return:
+    :return: loss
     """
     X_params = np.array([params['lrate'], params['l2_reg'], params['n_epochs']]).reshape(1, -1)
     loss = rf.predict(X_params)
 
-    return loss
+    return loss[0]
 
 
-def obj_func(params):
-    """
-    Objective function for TPE HPO
-    :param params:
-    :return: predicted loss from surrogate benchmark (random forest)
-    """
-    loss = random_forest_loss_predict(params)
-
-    return {'loss': loss, 'status': STATUS_OK}
 
 
 if __name__ == "__main__":
 
-    # define space for TPE HPO
-    space = {"lrate": hp.uniform("lrate", 0, 1),
-             "l2_reg": hp.uniform("l2_reg", 0, 1),
-             "n_epochs": scope.int(hp.quniform("n_epochs", 5, 2000, 1))}
+    param_space = ConfigurationSpace()
+
+    lrate = UniformFloatHyperparameter('lrate', 0, 1)
+    l2_rate = UniformFloatHyperparameter('l2_reg', 0, 1)
+    n_epochs = UniformIntegerHyperparameter('n_epochs', 5, 2000)
+
+    param_space.add_hyperparameters([lrate, l2_rate, n_epochs])
+
+    scenario = Scenario({
+        'run_obj': 'quality',
+        'cs': param_space,
+        'runcount-limit': 100,
+        'deterministic': True,
+    })
+
 
     num_repeat = 10
-
     for i in range(num_repeat):
         print(f'Run {i}/{num_repeat}')
-        # perform TPE optimization and do logging
-        trials = Trials()
-        best_params = fmin(fn=obj_func,
-                        space=space,
-                        algo=tpe.suggest,
-                        max_evals=100,
-                        trials=trials)
+        # perform SMAC optimization and do logging
+        # smac = SMAC4BB(scenario=scenario, tae_runner=log_reg_loss)
+        smac = SMAC4HPO(scenario=scenario,
+                        rng=np.random.RandomState(i),
+                        # intensifier_kwargs=intensifier_kwargs,
+                        tae_runner=random_forest_loss_predict)
 
-        print("Best parameters:", best_params)
-        print(trials.best_trial['result']['loss'])
+        best_val = smac.optimize()
 
-        loss = trials.losses()
-        val = trials.vals
-        val['loss'] = loss
-        # print(val)
+        rh = smac.runhistory
+        val = {
+            'lrate': [],
+            'l2_reg': [],
+            'n_epochs': [],
+            'loss': []
+        }
+        confs = rh.get_all_configs()
+        for c in confs:
+            loss = rh.get_cost(c)
+            for key in val.keys():
+                if key == 'loss':
+                    val[key].append(loss)
+                else:
+                    val[key].append(c._values[key])
 
 
-        filename = 'results/tpe{}.csv'.format(i)
+        filename = 'results/smac{}.csv'.format(i)
         header = ['lrate', 'l2_reg', 'n_epochs', 'loss']
         values = (val.get(key, []) for key in header)
         data = (dict(zip(header, row)) for row in zip(*values))
