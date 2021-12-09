@@ -16,7 +16,7 @@ import csv
 
 
 ########     LOAD CSV DATA      ########
-# TODO: loading data from csv files
+# load all gathered csv data
 path = 'csv_data'
 filepath = glob.glob(path+'/*.csv')
 # half data ofr training and second half for testing
@@ -26,12 +26,11 @@ for filename in filepath:
     print('Reading {}'.format(filename))
     df = pd.read_csv(filename)
     data = pd.concat((df, data), axis=0)
-    # pre_data.append(df)
-# data = pd.concat(pre_data, axis=0, ignore_index=True)
-print(data)
+# print(data)
 
 X = data.drop(columns=['loss'])
 y = data['loss']
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=33, shuffle=True)
 
 print("Image Data Shape", X_train.shape)
@@ -39,15 +38,6 @@ print("Image test Data Shape", X_test.shape)
 print("Target Data Shape", y_train.shape)
 print("Target test Data Shape", y_test.shape)
 
-
-# define space for random search on Random Forest regression
-space = {
-    # 'min_samples_split': hp.uniform('min_samples_split', 2, 10),
-    'min_samples_split': scope.int(hp.quniform('min_samples_split', 2, 100, q=1)),
-    # 'n_estimators': hp.uniform('n_estimators', 10, 2000),
-    'n_estimators': scope.int(hp.quniform('n_estimators', 10, 2000, q=1)),
-    'max_features': hp.choice('max_features', ['auto', 'sqrt', 'log2'])
-}
 
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -83,12 +73,20 @@ if __name__ == "__main__":
     perform random search optimization on Random Forest Regressor
     to find best parameters for Random Forest as surrogate benchmark model
     """
+
+    # define space for random search on Random Forest regression
+    space = {
+        'min_samples_split': scope.int(hp.quniform('min_samples_split', 2, 100, q=1)),
+        'n_estimators': scope.int(hp.quniform('n_estimators', 10, 2000, q=1)),
+        'max_features': hp.choice('max_features', ['auto', 'sqrt', 'log2'])
+    }
+
     trials = Trials()
     best_params = fmin(fn=obj_func,
-                    space=space,
-                    algo=rand.suggest,
-                    max_evals=100,
-                    trials=trials)
+                       space=space,
+                       algo=rand.suggest,
+                       max_evals=100,
+                       trials=trials)
 
     print("Best parameters:", best_params)
     print(trials.best_trial['result']['loss'])
