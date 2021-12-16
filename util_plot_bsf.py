@@ -79,6 +79,7 @@ def plot_bsf_median(benchmark):
     plt.legend(fontsize=15)
     plt.grid()
     plt.xlim([1, 100])
+    plt.ylim([0.09, 0.18])
     plt.savefig('plots/bsf_median_{}.png'.format(benchmark))
     plt.clf()
     print('Saved plots/bsf_median_{}.png'.format(benchmark))
