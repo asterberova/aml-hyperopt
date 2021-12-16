@@ -14,7 +14,7 @@ bin/make_protobufs
 python spearmint/setup.py install
 ```
 
-###SMAC
+### SMAC
 This package requires Python 3.9.
 ```bash
 # create a new environment
@@ -22,7 +22,7 @@ This package requires Python 3.9.
 pip install -r requirements_smac.txt
 ```
 
-###TPE and rest of the scripts
+### TPE and rest of the scripts
 This package requires Python 3.6.
 ```bash
 # create a new environment
@@ -91,7 +91,7 @@ python -m main_random_logreg
 Performs random search of hyperparameters of Random Forest Regresor. "We used random search to optimize hyperparameters and considered 100 samples over the stated hyperparameters; we trained the model on 50% of the data, chose the best configuration based on its performance on the other 50%. Returns the best founded parameters."
 ```bash
 # Run random search on random forest
-python -m main_random_rofest
+python -m main_random_rorest
 ```
 
 **cite** The implementation is based on:
